@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>BreatheWell St Mary's Dashboard</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="shortcut icon" href="assets/favicon.png">
+  <meta name="viewport" content="user-scalable=no,width=device-width,initial-scale=1,maximum-scale=1,shrink-to-fit=no">
+  <meta name="description" content="BreatheWell St Mary's County air quality dashboard">
+  <meta name="google" content="notranslate">
+  <meta property="og:site_name" content="BreatheWell St Mary's">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="BreatheWell St Mary's">
+  <meta property="og:url" content="http://west4th.bayeterosssmith.com/">
+  <meta property="og:description" content="BreatheWell St Mary's County air quality dashboard">
+  <script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
+  <script src='scripts/locations.js'></script>
+  <style>
+    html,
+    body {
+      padding: 0;
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      font-size: 14px;
+      width: 100%;
+      min-width: 400px;
+      position: relative;
+    }
+
+    .wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .module-wrapper {
+      flex: 0 1 100%;
+      margin-bottom: 2rem;
+      background-color: #f5f5f5;
+      border-radius: 2px;
+      position: relative;
+    }
+
+    .module-wrapper>div {
+      padding: 1.25rem;
+    }
+
+    .module-wrapper.half {
+      flex: 0 1 48%;
+    }
+
+    .map-wrapper {
+      position: relative;
+      width: 100%;
+      height: 400px;
+    }
+
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+      transition: all 0.3s;
+    }
+
+    #logo {
+      max-width: 200px;
+      height: auto;
+    }
+
+    #flag {
+      width: 100px;
+      display: inline-block;
+    }
+
+    @media screen and (max-width: 800px) {
+      .module-wrapper.half {
+        flex: 0 1 100%;
+        position: relative;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class='wrapper'>
+    <div style='background-color: #fff' class='module-wrapper'>
+      <div>
+        <img id='logo' src='assets/logo.png' />
+      </div>
+    </div>
+    <div class='module-wrapper half'>
+      <div>
+        <h3>Air quality index</h3>
+        <div class='flag-wrapper'>
+          <h1>AQI: 101</h1>
+          <img id='flag' src='assets/flag-red.png' />
+          <h3>Red = unhealthy</h3>
+          <p>For all outdoor activities, take more breaks and do less
+            intense activities.
+            Consider moving longer or more intense activities
+            indoors or rescheduling them to another day or time.
+            Watch for symptoms and take action as needed.*
+            Students with asthma should follow their asthma action
+            plans and keep their quick-relief medicine handy.
+          </p>
+          <p>Info: Particle pollution – People with heart or lung disease, older adults, and children are considered
+            sensitive and therefore at greater risk.</p>
+          <p><a href="#">How values are calculated</a></p>
+        </div>
+      </div>
+    </div>
+    <div class='module-wrapper half'>
+      <div>
+        <h3>Local weather conditions</h3>
+        <h1>68º Mostly Cloudy.</h1>
+        <p><b>Feels like:</b> 68º <b>Low:</b> 47º <b>High:</b> 68º</p>
+        <p>
+          Wind: 15 MPH north
+        </p>
+        <p><i>
+            Note: higher winds lead to ipsum dolor sit amet consectetur, adipisicing elit...
+          </i></p>
+      </div>
+    </div>
+    <div class='module-wrapper'>
+      <div>
+        <h3>Sensor array live view</h3>
+        <p>View of planned air sensor locations for all sensor types.</p>
+        <div class='map-wrapper'>
+          <div id='map'></div>
+        </div>
+      </div>
+    </div>
+    <div class='module-wrapper'>
+      <div>
+        <h3>Purple air sensors map</h3>
+        <div class='map-wrapper'>
+          <iframe width="100%" height="400px" frameBorder="0"
+            src="https://www.purpleair.com/map?opt=1/mAQI/a10/cC0&select=8248#10.7/38.212/-76.5039"></iframe>
+        </div>
+      </div>
+    </div>
+    <div class='module-wrapper half'>
+      <div>
+        <h3>Resources</h3>
+        <ul>
+          <li>Papers/videos on air quality, pollutants, etc</li>
+          <li>Fly the Flag program</li>
+        </ul>
+      </div>
+    </div>
+    <div class='module-wrapper half'>
+      <div>
+        <h3>Data access</h3>
+        <p><a href="#">Access raw data</a></p>
+      </div>
+    </div>
+  </div>
+  <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiZHFnb3JlbGljayIsImEiOiJja2k0c242OHAxd291MzBwZWMwbDB1cjA3In0.W5Cq9wArOm8vGVSEgE7ajQ';
+    var map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v11',
+      center: [-76.549982, 38.297894],
+      zoom: 9,
+      minZoom: 7,
+    });
+
+    map.on('load', function () {
+
+      map.loadImage(
+        'https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png',
+        // Add an image to use as a custom marker
+        function (error, image) {
+          if (error) throw error;
+          map.addImage('custom-marker', image);
+
+          map.addSource('places', SensorLocations);
+
+          // Add a layer showing the places.
+          map.addLayer({
+            'id': 'places',
+            'type': 'symbol',
+            'source': 'places',
+            'layout': {
+              'icon-image': 'custom-marker',
+              'icon-allow-overlap': true
+            }
+          });
+        }
+      );
+
+      // Create a popup, but don't add it to the map yet.
+      var popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false
+      });
+
+      map.on('mouseenter', 'places', function (e) {
+        // Change the cursor style as a UI indicator.
+        map.getCanvas().style.cursor = 'pointer';
+
+        var coordinates = e.features[0].geometry.coordinates.slice();
+        var description = e.features[0].properties.description;
+
+        // Ensure that if the map is zoomed out such that multiple
+        // copies of the feature are visible, the popup appears
+        // over the copy being pointed to.
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+
+        // Populate the popup and set its coordinates
+        // based on the feature found.
+        popup.setLngLat(coordinates).setHTML(description).addTo(map);
+      });
+
+      map.on('mouseleave', 'places', function () {
+        map.getCanvas().style.cursor = '';
+        popup.remove();
+      });
+    });
+  </script>
+  <script type="text/javascript" src="scripts/main.js"></script>
+</body>
+
+</html>
