@@ -12,7 +12,6 @@
   <meta property="og:locale" content="en_US">
   <meta property="og:type" content="website">
   <meta property="og:title" content="BreatheWell St Mary's">
-  <meta property="og:url" content="http://west4th.bayeterosssmith.com/">
   <meta property="og:description" content="BreatheWell St Mary's County air quality dashboard">
   <script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
   <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -99,6 +98,7 @@
     <div class='module-wrapper half'>
       <div>
         <h3>Air quality index</h3>
+        <small>note: this is not live data</small>
         <div class='flag-wrapper'>
           <h1>AQI: 101</h1>
           <img id='flag' src='assets/flag-red.png' />
@@ -120,6 +120,7 @@
     <div class='module-wrapper half'>
       <div>
         <h3>Local weather conditions</h3>
+        <small>note: this is not live data</small>
         <h1>68º Mostly Cloudy.</h1>
         <p><b>Feels like:</b> 68º <b>Low:</b> 47º <b>High:</b> 68º</p>
         <p>
@@ -144,7 +145,7 @@
         <h3>Purple air sensors map</h3>
         <div class='map-wrapper'>
           <iframe width="100%" height="400px" frameBorder="0"
-            src="https://www.purpleair.com/map?opt=1/mAQI/a10/cC0&select=8248#10.7/38.212/-76.5039"></iframe>
+            src="https://www.purpleair.com/map?opt=1/mAQI/a10/cC0#10.41/38.1976/-76.4581"></iframe>
         </div>
       </div>
     </div>
@@ -174,8 +175,8 @@
       minZoom: 7,
     });
 
+    // from this example: https://docs.mapbox.com/mapbox-gl-js/example/popup-on-hover/
     map.on('load', function () {
-
       map.loadImage(
         'https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png',
         // Add an image to use as a custom marker
