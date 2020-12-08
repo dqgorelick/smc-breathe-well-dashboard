@@ -1,0 +1,64 @@
+service: updatelatest
+
+frameworkVersion: '2'
+
+custom:
+  bucket: ${file(./secrets_${opt:stage, 'dev'}.json):BUCKET_NAME}
+  dynamotable: ${file(./secrets_${opt:stage, 'dev'}.json):TABLE_NAME}
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+
+  stage: dev
+  region: us-east-1
+
+  environment:
+    BUCKET: ${file(./secrets_${opt:stage, 'dev'}.json):BUCKET_NAME}
+    TABLE: ${file(./secrets_${opt:stage, 'dev'}.json):TABLE_NAME}
+    OPENWEATHERMAP_API_KEY: ${file(./secrets_${opt:stage, 'dev'}.json):OPENWEATHERMAP_API_KEY}
+    DB_REGION: ${opt:region, self:provider.region}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - 's3:*'
+      Resource:
+        - "arn:aws:s3:::${self:custom.bucket}/*"
+        - "arn:aws:s3:::${self:custom.bucket}"
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+      Resource: 
+        - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE}"
+
+functions:
+  updateLatest:
+    handler: handler.updateLatest
+    events:
+      - schedule: rate(10 minutes)
+  getLatest:
+    handler: handler.getLatest
+    events:
+      - http:
+          path: latest
+          method: get
+          cors: true
+
+resources:
+  Resources:
+    ArchiveTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: id
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.dynamotable}

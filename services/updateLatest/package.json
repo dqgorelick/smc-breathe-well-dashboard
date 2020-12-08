@@ -1,0 +1,15 @@
+{
+  "name": "updatelatest",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.805.0",
+    "node-fetch": "^2.6.1"
+  }
+}
