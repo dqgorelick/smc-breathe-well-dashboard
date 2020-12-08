@@ -15,6 +15,9 @@
   <meta property="og:title" content="BreatheWell St Mary's">
   <meta property="og:description" content="BreatheWell St Mary's County air quality dashboard">
   <script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+    integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+  <script src='https://momentjs.com/downloads/moment.js'></script>
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
   <link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
@@ -29,6 +32,14 @@
       width: 100%;
       min-width: 400px;
       position: relative;
+    }
+
+    a {
+      color: #5f903f;
+    }
+
+    h2 {
+      color: #1a3245;
     }
 
     .wrapper {
@@ -80,6 +91,11 @@
       display: inline-block;
     }
 
+    .updated {
+      color: #444;
+      font-style: italic;
+    }
+
     @media screen and (max-width: 800px) {
       .module-wrapper.half {
         flex: 0 1 100%;
@@ -91,50 +107,42 @@
 
 <body>
   <div class='wrapper'>
-    <div style='background-color: #fff' class='module-wrapper'>
-      <div>
-        <img id='logo' src='assets/logo.png' />
-      </div>
-    </div>
     <div class='module-wrapper half'>
       <div>
-        <h3>Air quality index</h3>
-        <small>note: this is not live data</small>
+        <h2>Air Quality Index (AQI)</h2>
         <div class='flag-wrapper'>
-          <h1>AQI: 101</h1>
-          <img id='flag' src='assets/flag-red.png' />
-          <h3>Red = unhealthy</h3>
-          <p>For all outdoor activities, take more breaks and do less
-            intense activities.
-            Consider moving longer or more intense activities
-            indoors or rescheduling them to another day or time.
-            Watch for symptoms and take action as needed.*
-            Students with asthma should follow their asthma action
-            plans and keep their quick-relief medicine handy.
+          <h1>AQI: <span class="aqi-index"></span></h1>
+          <img class='aqi-flag' id='flag' />
+          <h3><span class="aqi-description"></span></h3>
+          <p><span class="aqi-description-extended"></span></p>
+          <p><a target="_blank" href="./assets/air_quality_poster.png">Learn more about the flags.</a>
           </p>
-          <p>Info: Particle pollution – People with heart or lung disease, older adults, and children are considered
-            sensitive and therefore at greater risk.</p>
-          <p><a href="#">How values are calculated (to add)</a></p>
+          <p><span class="updated"></span></p>
         </div>
       </div>
     </div>
     <div class='module-wrapper half'>
       <div>
-        <h3>Local weather conditions</h3>
-        <small>note: this is not live data</small>
-        <h1>68º Mostly Cloudy.</h1>
-        <p><b>Feels like:</b> 68º <b>Low:</b> 47º <b>High:</b> 68º</p>
+        <h2>Local Weather Conditions</h2>
+        <h1><span class="weather-main"></span></h1>
+        <h3><span class="weather-conditions"></span></h3>
+        <p><b>Feels like:</b><span class="weather-feels-line"></span><b>Low:</b><span
+            class="weather-low"></span><b>High:</b><span class="weather-high"></span></p>
         <p>
-          Wind: 15 MPH north
+          Sunrise: <span class="weather-sunrise"></span>
         </p>
-        <p><i>
-            Note: higher winds lead to ipsum dolor sit amet consectetur, adipisicing elit...
-          </i></p>
+        <p>
+          Sunset: <span class="weather-sunset"></span>
+        </p>
+        <p>
+          Wind: <span class="weather-wind"></span><span class="weather-wind-info"></span>
+        </p>
+        <p><span class="updated"></span></p>
       </div>
     </div>
     <div class='module-wrapper'>
       <div>
-        <h3>Sensor array live view</h3>
+        <h2>Sensor Array Live View</h2>
         <p>View of planned air sensor locations for different sensor types.</p>
         <div class='map-wrapper'>
           <div id='map'></div>
@@ -143,7 +151,7 @@
     </div>
     <div class='module-wrapper'>
       <div>
-        <h3>Purple air sensors map</h3>
+        <h2>Purple Air Sensors Live View</h2>
         <p>Note: Map includes all community internet-connected sensors in the St Mary's county.</p>
         <div class='map-wrapper'>
           <iframe width="100%" height="400px" frameBorder="0"
@@ -151,98 +159,217 @@
         </div>
       </div>
     </div>
-    <div class='module-wrapper half'>
+    <div class='module-wrapper'>
       <div>
-        <h3>Educational Air Quality Resources</h3>
-        <ul>
-          <li><a href="https://www.airnow.gov/publications/air-quality-flag-program-getting-started/aqfp-fact-sheet/"
-              target="_blank">Fly the Flag Program Fact Sheet </a></li>
-          <li><a href="https://www.airnow.gov/air-quality-flag-program-classroom-curriculum-publications/"
-              target="_blank">Air Quality Lesson Plans for Teachers</a></li>
-          <li><a href="https://www.airnow.gov/activity-guides-publications/ " target="_blank">Activity Guide for
-              Schools</a></li>
-          <li><a href="https://www.airnow.gov/aqi/aqi-basics/" target="_blank">Learn More About AQI</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class='module-wrapper half'>
-      <div>
-        <h3>Data access</h3>
-        <p><a href="#">Access raw data (to add)</a></p>
+        <h2 id="star">* Watch For Symptoms</h2>
+        <p>Air pollution can make asthma symptoms worse and trigger attacks. Symptoms of asthma include coughing,
+          wheezing, difficulty breathing and chest tightness. Even students who do not have asthma could experience
+          these symptoms.</p>
+        <h3>If symptoms occur:</h3>
+        <p>The student might need to take a break, do a less intense activity, stop all activity, go indoors, or use
+          quick-relief medicine as prescribed. If symptoms don’t improve, get medical help.</p>
       </div>
     </div>
     <div class='module-wrapper'>
-      <div style='text-align: center'>
-        <p>Created by <a href="https://danielgorelick.com">Dan Gorelick</a> in collaboration with <a href="https://openaq.org">OpenAQ</a></p>
+      <div>
+        <h2>Data access & additional information</h2>
+        <p>The data from the sensor array is available in the JSON data format here: <a target="_blank"
+            href="https://utbo5or9sk.execute-api.us-east-1.amazonaws.com/dev/latest">access raw air quality
+            data</a>.</p>
+        <p>Learn more about how the AQI values are calculated: <a target="_blank"
+            href="https://www.airnow.gov/sites/default/files/2020-05/aqi-technical-assistance-document-sept2018.pdf">EPA
+            technical resource document.</a>
+        </p>
+      </div>
+    </div>
+    <div class='module-wrapper'>
+      <div style='text-align: center; background-color: rgb(255,255,255);'>
+        <p>Dashboard created by <a href="https://danielgorelick.com">Dan Gorelick</a> in collaboration with <a
+            href="https://openaq.org">OpenAQ</a>. View <a target="_blank"
+            href="https://github.com/dqgorelick/smc-breathe-well-dashboard">source code.</a></p>
       </div>
     </div>
   </div>
   <script>
-    mapboxgl.accessToken = 'pk.eyJ1IjoiZHFnb3JlbGljayIsImEiOiJja2k0c242OHAxd291MzBwZWMwbDB1cjA3In0.W5Cq9wArOm8vGVSEgE7ajQ';
-    var map = new mapboxgl.Map({
-      container: 'map',
-      style: 'mapbox://styles/mapbox/streets-v11',
-      center: [-76.549982, 38.297894],
-      zoom: 9,
-      minZoom: 7,
-    });
+    (function () {
 
-    // from this example: https://docs.mapbox.com/mapbox-gl-js/example/popup-on-hover/
-    map.on('load', function () {
-      map.loadImage(
-        'https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png',
-        // Add an image to use as a custom marker
-        function (error, image) {
-          if (error) throw error;
-          map.addImage('custom-marker', image);
+      const urlParams = new URLSearchParams(window.location.search);
+      const customAQI = urlParams.get('aqi');
 
-          map.addSource('places', SensorLocations);
-
-          // Add a layer showing the places.
-          map.addLayer({
-            'id': 'places',
-            'type': 'symbol',
-            'source': 'places',
-            'layout': {
-              'icon-image': 'custom-marker',
-              'icon-allow-overlap': true
-            }
-          });
+      var categories = {
+        'green': {
+          color: 'Green',
+          low: 0,
+          high: 50,
+          description: 'Good',
+          guidance: 'Great day to be active outside!'
+        },
+        'yellow': {
+          color: 'Yellow',
+          low: 51,
+          high: 100,
+          description: 'Moderate',
+          guidance: 'Good day to be active outside!<br><br>Students who are unusually sensitive to air pollution could have symptoms.<a href="#star">*</a>'
+        },
+        'orange': {
+          color: 'Orange',
+          low: 101,
+          high: 150,
+          description: 'Unhealthy for Sensitive Groups',
+          guidance: 'It’s OK to be active outside, especially for short activities such as recess and physical education (PE).<br><br>For longer activities such as athletic practice, take more breaks and do less intense activities.<br><br>Watch for symptoms and take action as needed.<a href="#star">*</a><br><br>Students with asthma should follow their asthma action plans and keep their quick-relief medicine handy.'
+        },
+        'red': {
+          color: 'Red',
+          low: 151,
+          high: 200,
+          description: 'Unhealthy',
+          guidance: 'For all outdoor activities, take more breaks and do less intense activities.<br><br>Consider moving longer or more intense activities indoors or rescheduling them to another day or time.<br><br>Watch for symptoms and take action as needed.<a href="#star">*</a><br><br>Students with asthma should follow their asthma action plans and keep their quick-relief medicine handy.'
+        },
+        'purple': {
+          color: 'Purple',
+          low: 201,
+          high: 300,
+          description: 'Very Unhealthy',
+          guidance: 'Move all activities indoors or reschedule them to another day.'
+        },
+        'maroon': {
+          color: 'Maroon',
+          low: 301,
+          high: 500,
+          description: 'Hazardous',
+          guidance: 'Move all activities indoors or reschedule them to another day.'
         }
-      );
+      }
 
-      // Create a popup, but don't add it to the map yet.
-      var popup = new mapboxgl.Popup({
-        closeButton: false,
-        closeOnClick: false
-      });
-
-      map.on('mouseenter', 'places', function (e) {
-        // Change the cursor style as a UI indicator.
-        map.getCanvas().style.cursor = 'pointer';
-
-        var coordinates = e.features[0].geometry.coordinates.slice();
-        var description = e.features[0].properties.description;
-
-        // Ensure that if the map is zoomed out such that multiple
-        // copies of the feature are visible, the popup appears
-        // over the copy being pointed to.
-        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+      var AqiToCategory = function (aqi) {
+        if (aqi >= 0 && aqi < 51) {
+          return categories['green']
+        } else if (aqi >= 51 && aqi < 100) {
+          return categories['yellow']
+        } else if (aqi >= 101 && aqi < 151) {
+          return categories['orange']
+        } else if (aqi >= 151 && aqi < 201) {
+          return categories['red']
+        } else if (aqi >= 201 && aqi < 301) {
+          return categories['purple']
+        } else if (aqi >= 301) {
+          return categories['maroon']
         }
+      }
 
-        // Populate the popup and set its coordinates
-        // based on the feature found.
-        popup.setLngLat(coordinates).setHTML(description).addTo(map);
+      var windDegreetoTextualDescription = function (degree) {
+        if (degree > 337.5) return 'Northerly';
+        if (degree > 292.5) return 'North Westerly';
+        if (degree > 247.5) return 'Westerly';
+        if (degree > 202.5) return 'South Westerly';
+        if (degree > 157.5) return 'Southerly';
+        if (degree > 122.5) return 'South Easterly';
+        if (degree > 67.5) return 'Easterly';
+        if (degree > 22.5) { return 'North Easterly'; }
+        return 'Northerly';
+      }
+
+      var calculateAverageAQI = function (sensors) {
+        var total = 0;
+        sensors.forEach(function (sensor) {
+          total += sensor['AQI']
+        })
+        console.log(total)
+        return Math.ceil(total / sensors.length)
+      }
+
+      var updateLatest = function () {
+        $.getJSON('https://utbo5or9sk.execute-api.us-east-1.amazonaws.com/dev/latest', function (data) {
+          console.log(data)
+          var AQI = calculateAverageAQI(data.communitySensors.data)
+          if (customAQI) {
+            AQI = parseInt(customAQI)
+          }
+          var category = AqiToCategory(AQI)
+          $('.aqi-index').text(AQI)
+          $('.aqi-flag').attr("src", 'assets/flag-' + category.color.toLowerCase() + '.png')
+          $('.aqi-description').text(category.color + ' = ' + category.description)
+          $('.aqi-description-extended').html(category.guidance)
+          $('.weather-main').text(data.weather.data.main.temp + 'º')
+          $('.weather-conditions').text(data.weather.data.weather[0].main + ' - ' + data.weather.data.weather[0].description)
+          $('.weather-feels-line').text(' ' + data.weather.data.main.feels_like + 'º ')
+          $('.weather-low').text(' ' + data.weather.data.main.temp_min + 'º ')
+          $('.weather-high').text(' ' + data.weather.data.main.temp_max + 'º ')
+          $('.weather-wind').text(data.weather.data.wind.speed + 'mph ')
+          $('.weather-sunrise').text(moment(data.weather.data.sunrise * 1000).format('LT') + ', ' + moment(data.weather.data.sunrise * 1000).fromNow())
+          $('.weather-sunset').text(moment(data.weather.data.sunset * 1000).format('LT') + ', ' + moment(data.weather.data.sunset * 1000).fromNow())
+          $('.weather-wind-info').text(windDegreetoTextualDescription(data.weather.data.deg))
+          $('.updated').text('Updated ' + moment(data.timestamp).fromNow())
+        })
+      }
+
+      mapboxgl.accessToken = 'pk.eyJ1IjoiZHFnb3JlbGljayIsImEiOiJja2k0c242OHAxd291MzBwZWMwbDB1cjA3In0.W5Cq9wArOm8vGVSEgE7ajQ';
+      var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: [-76.549982, 38.297894],
+        zoom: 9,
+        minZoom: 7,
       });
 
-      map.on('mouseleave', 'places', function () {
-        map.getCanvas().style.cursor = '';
-        popup.remove();
+      // from this example: https://docs.mapbox.com/mapbox-gl-js/example/popup-on-hover/
+      map.on('load', function () {
+        map.loadImage(
+          'https://docs.mapbox.com/mapbox-gl-js/assets/custom_marker.png',
+          // Add an image to use as a custom marker
+          function (error, image) {
+            if (error) throw error;
+            map.addImage('custom-marker', image);
+
+            map.addSource('places', SensorLocations);
+
+            // Add a layer showing the places.
+            map.addLayer({
+              'id': 'places',
+              'type': 'symbol',
+              'source': 'places',
+              'layout': {
+                'icon-image': 'custom-marker',
+                'icon-allow-overlap': true
+              }
+            });
+          }
+        );
+
+        // Create a popup, but don't add it to the map yet.
+        var popup = new mapboxgl.Popup({
+          closeButton: false,
+          closeOnClick: false
+        });
+
+        map.on('mouseenter', 'places', function (e) {
+          // Change the cursor style as a UI indicator.
+          map.getCanvas().style.cursor = 'pointer';
+
+          var coordinates = e.features[0].geometry.coordinates.slice();
+          var description = e.features[0].properties.description;
+
+          // Ensure that if the map is zoomed out such that multiple
+          // copies of the feature are visible, the popup appears
+          // over the copy being pointed to.
+          while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+          }
+
+          // Populate the popup and set its coordinates
+          // based on the feature found.
+          popup.setLngLat(coordinates).setHTML(description).addTo(map);
+        });
+
+        map.on('mouseleave', 'places', function () {
+          map.getCanvas().style.cursor = '';
+          popup.remove();
+        });
       });
-    });
+
+      updateLatest()
+    })()
   </script>
-  <script type="text/javascript" src="scripts/main.js"></script>
 </body>
 
 </html>
