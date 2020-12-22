@@ -1,13 +1,15 @@
 const AWS = require('aws-sdk');
-const moment = require('moment');
+const fetch = require('node-fetch');
+const moment = require('moment')
 
 const calculateAQI = require('./calculateAQI')
 
 const UPLOAD_BUCKET = process.env.BUCKET;
 const weatherApiKey = process.env.OPENWEATHERMAP_API_KEY;
-const SENSOR_DATA_BUCKET = process.env.TRAILER_SENSOR_DATA_BUCKET;
+const SENSOR_DATA_BUCKET = process.env.SENSOR_DATA_BUCKET;
 
 const s3 = new AWS.S3();
+
 
 const getTrailerLatest = () => {
   return new Promise((resolve, reject) => {
@@ -71,6 +73,7 @@ const getTrailerLatest = () => {
                 key = 'WS_M/H_current'
               }
               final[key] = values[4]
+              final['AQI'] = calculateAQI.aqiFromPM(parseFloat(final['PM2.5_UG/M3']))
             }
           })
           resolve(final)
@@ -110,6 +113,7 @@ const getLatestWeatherData = () => {
           data: finalWeatherData
         })
       });
+
   })
 }
 
@@ -200,19 +204,19 @@ module.exports.updateLatest = async (event, context, callback) => {
     console.log(err)
   }
 
-  // fetch latest trailer sensor data 
-  // let trailerData = {};
-  // try {
-  //   trailerData = await getTrailerLatest()
-  // } catch (err) {
-  //   console.log(err)
-  // }
+  let trailerData = {};
+  try {
+    trailerData = await getTrailerLatest()
+  } catch (err) {
+    console.log(err)
+    trailerData = err
+  }
 
   const latestData = {
     timestamp: Date.now(),
     communitySensors: communitySensorData,
     weather: weatherData,
-    // trailer: trailerData
+    trailer: trailerData
   }
 
   console.log('uploading...')

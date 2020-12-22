@@ -32,6 +32,37 @@ function aqiFromPM(pm) {
   }
 }
 
+// per 1 hour average
+function aqiFromOzone(ozone) {
+  if (isNaN(ozone)) return "-";
+  if (ozone == undefined) return "-";
+  if (ozone < 0) return ozone;
+  if (ozone > 1000) return "-";
+  /*      
+  Good                           0 - 0.054
+  Moderate                        0.055 - 0.070
+  Unhealthy for Sensitive Groups  0.071 - 0.085
+  Unhealthy                                 0.086 - 0.105 
+  Very Unhealthy                    0.106 - 0.200
+  Hazardous                                 0.405 - 0.604        
+  */
+  if (ozone > 0.200) {
+    return calcAQI(ozone, 500, 301, 500, 0.200);
+  } else if (ozone > 0.106) {
+    return calcAQI(ozone, 300, 201, 0.200, 0.106);
+  } else if (ozone > 0.086) {
+    return calcAQI(ozone, 200, 151, 0.105 , 0.086);
+  } else if (ozone > 0.071) {
+    return calcAQI(ozone, 150, 101, 0.085, 0.071);
+  } else if (ozone > 0.055) {
+    return calcAQI(ozone, 100, 51, 0.070, 0.055);
+  } else if (ozone >= 0) {
+    return calcAQI(ozone, 50, 0, 0.054, 0);
+  } else {
+    return undefined;
+  }
+}
+
 function bplFromPM(pm) {
   if (isNaN(pm)) return 0;
   if (pm == undefined) return 0;

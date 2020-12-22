@@ -115,7 +115,7 @@ var SensorLocations = {
       },
       {
         type: 'Feature', properties: {
-          id: 23, description: "Chesapeake Charter Public School", purpleAirPlanned: true, purpleAirInstalled: false, AeroqualSensor: false, EPA: false
+          id: 23, description: "Chesapeake Public Charter School", purpleAirPlanned: true, purpleAirInstalled: false, AeroqualSensor: false, EPA: false
         }, geometry: { type: 'Point', coordinates: [-76.4929258, 38.2429941] }
       },
       {
@@ -152,6 +152,11 @@ var SensorLocations = {
         type: 'Feature', properties: {
           id: 30, description: "District 1 Station", purpleAirPlanned: false, purpleAirInstalled: false, AeroqualSensor: true, EPA: 'SOMETIMES'
         }, geometry: { type: 'Point', coordinates: [-76.7763099, 38.478134] }
+      },
+      {
+        type: 'Feature', properties: {
+          id: 31, description: "District 3 Station", purpleAirPlanned: false, purpleAirInstalled: false, AeroqualSensor: true, EPA: 'SOMETIMES'
+        }, geometry: { type: 'Point', coordinates: [-76.51976985712317, 38.30047726109864] }
       },
       {
         type: 'Feature', properties: {
