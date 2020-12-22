@@ -1,12 +1,86 @@
 const AWS = require('aws-sdk');
-const fetch = require('node-fetch');
+const moment = require('moment');
 
 const calculateAQI = require('./calculateAQI')
 
 const UPLOAD_BUCKET = process.env.BUCKET;
 const weatherApiKey = process.env.OPENWEATHERMAP_API_KEY;
+const SENSOR_DATA_BUCKET = process.env.TRAILER_SENSOR_DATA_BUCKET;
 
 const s3 = new AWS.S3();
+
+const getTrailerLatest = () => {
+  return new Promise((resolve, reject) => {
+    try {
+      s3.listObjects({
+        Bucket: SENSOR_DATA_BUCKET,
+        Delimiter: '/'
+      }, function (err, data) {
+        if (err) {
+          console.log(err)
+          throw new Error(err)
+        }
+        // const TTL = 24 * 60 * 60 * 1000 // 24 hours
+        // const toDelete = [];
+        const isoPattern = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/
+        const now = moment(new Date())
+        let leastDistance = Infinity;
+        let latestFile;
+        // get latest file
+        for (let i = 0; i < data.Contents.length; i++) {
+          const lastModified = JSON.stringify(data.Contents[i].LastModified)
+          const key = data.Contents[i].Key
+          try {
+            if (lastModified.match(isoPattern) !== null) {
+              const created = moment(lastModified.match(isoPattern)[0])
+              const difference = moment.duration(now.diff(created));
+              if (difference < leastDistance) {
+                leastDistance = difference
+                latestFile = data.Contents[i].Key
+              }
+              // TODO add TTL
+              // if (difference > TTL) {
+              //   toDelete.push(key)
+              // }
+            }
+          } catch (err) {
+            console.log(err)
+            throw new Error(err)
+          }
+        }
+        // get file contents of latest
+        s3.getObject({
+          Bucket: SENSOR_DATA_BUCKET,
+          Key: latestFile
+        },  function (err, data) {
+          if (err) {
+            throw new Error(err)
+          }
+          const final = {}
+          // temporary fix
+          let windSpeedFound = false
+          data.Body.toString('utf-8').split('\n').map((line) => {
+            const values = line.split('|')
+            if (final['DATE'] === undefined) {
+              final['DATE'] = values[2]
+            }
+            if (values.length > 1) {
+              let key = values[1]
+              if (values[1] === 'WS_M/H' && !windSpeedFound) {
+                windSpeedFound = true
+                key = 'WS_M/H_current'
+              }
+              final[key] = values[4]
+            }
+          })
+          resolve(final)
+        })
+      })
+    } catch (err) {
+      reject(err.message)
+    }
+  })
+}
 
 const getLatestWeatherData = () => {
   return new Promise((resolve, reject) => {
@@ -36,7 +110,6 @@ const getLatestWeatherData = () => {
           data: finalWeatherData
         })
       });
-
   })
 }
 
@@ -127,10 +200,19 @@ module.exports.updateLatest = async (event, context, callback) => {
     console.log(err)
   }
 
+  // fetch latest trailer sensor data 
+  // let trailerData = {};
+  // try {
+  //   trailerData = await getTrailerLatest()
+  // } catch (err) {
+  //   console.log(err)
+  // }
+
   const latestData = {
     timestamp: Date.now(),
     communitySensors: communitySensorData,
-    weather: weatherData
+    weather: weatherData,
+    // trailer: trailerData
   }
 
   console.log('uploading...')

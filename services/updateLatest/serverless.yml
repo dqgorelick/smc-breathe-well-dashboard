@@ -5,6 +5,7 @@ frameworkVersion: '2'
 custom:
   bucket: ${file(./secrets_${opt:stage, 'dev'}.json):BUCKET_NAME}
   dynamotable: ${file(./secrets_${opt:stage, 'dev'}.json):TABLE_NAME}
+  sensorDataBucket: ${file(./secrets_${opt:stage, 'dev'}.json):TRAILER_SENSOR_DATA_BUCKET}
 
 provider:
   name: aws
@@ -15,6 +16,7 @@ provider:
 
   environment:
     BUCKET: ${file(./secrets_${opt:stage, 'dev'}.json):BUCKET_NAME}
+    SENSOR_DATA_BUCKET: ${file(./secrets_${opt:stage, 'dev'}.json):TRAILER_SENSOR_DATA_BUCKET}
     TABLE: ${file(./secrets_${opt:stage, 'dev'}.json):TABLE_NAME}
     OPENWEATHERMAP_API_KEY: ${file(./secrets_${opt:stage, 'dev'}.json):OPENWEATHERMAP_API_KEY}
     DB_REGION: ${opt:region, self:provider.region}
@@ -25,6 +27,8 @@ provider:
       Resource:
         - "arn:aws:s3:::${self:custom.bucket}/*"
         - "arn:aws:s3:::${self:custom.bucket}"
+        - "arn:aws:s3:::${self:custom.sensorDataBucket}/*"
+        - "arn:aws:s3:::${self:custom.sensorDataBucket}"
     - Effect: Allow
       Action:
         - dynamodb:PutItem

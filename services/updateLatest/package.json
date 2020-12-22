@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.805.0",
+    "moment": "^2.29.1",
     "node-fetch": "^2.6.1"
   }
 }

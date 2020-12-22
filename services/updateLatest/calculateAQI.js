@@ -5,7 +5,7 @@ function aqiFromPM(pm) {
   if (pm < 0) return pm;
   if (pm > 1000) return "-";
   /*      
-        Good                              0 - 50         0.0 - 15.0         0.0 – 12.0
+  Good                           0 - 50         0.0 - 15.0         0.0 – 12.0
   Moderate                        51 - 100           >15.0 - 40        12.1 – 35.4
   Unhealthy for Sensitive Groups   101 – 150     >40 – 65          35.5 – 55.4
   Unhealthy                                 151 – 200         > 65 – 150       55.5 – 150.4
