@@ -123,42 +123,6 @@
       ]
   }
 
-  var highSchoolsVisible = true;
-  var toggleHighSchools = function(map) {
-    for (var i = 0; i < mapLayers['highSchool'].length; i++) {
-      map.setLayoutProperty('highSchool' + i, 'visibility', highSchoolsVisible ? 'none' : 'visible')
-    }
-    highSchoolsVisible = !highSchoolsVisible;
-  }
-
-  var addMapLayers = function (map) {
-    Object.keys(mapLayers).forEach(function (schoolType) {
-      mapLayers[schoolType].forEach(function (layer, index) {
-        var id = schoolType + index
-        map.addSource(id, {
-          'type': 'geojson',
-          'data': layer.data
-        });
-        map.addLayer({
-          'id': id,
-          'type': 'fill',
-          'source': id,
-          'layout': {},
-          'paint': {
-            'fill-color': layer.fill,
-            'fill-opacity': 0.3
-          }
-        });
-        // map.on('click', id, function (e) {
-        //   new mapboxgl.Popup()
-        //     .setHTML(layer.name)
-        //     .setLngLat([e.lngLat['lng'], e.lngLat['lat']])
-        //     .addTo(map);
-        // });
-      })
-    })
-    toggleHighSchools(map);
-  }
 
   var getMarkerAqiAverage = function (data) {
     var sum = 0;
@@ -177,10 +141,60 @@
   }
 
   var loadMap = function (sensorData) {
+    console.log('in loading map')
+    mapboxgl.accessToken = 'pk.eyJ1IjoiZHFnb3JlbGljayIsImEiOiJja2k0c242OHAxd291MzBwZWMwbDB1cjA3In0.W5Cq9wArOm8vGVSEgE7ajQ';
+    var map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v11',
+      center: [-76.549982, 38.297894],
+      zoom: 9,
+      minZoom: 8,
+    });
+
+    var highSchoolsVisible = true;
+    
+    var toggleHighSchools = function(map) {
+      for (var i = 0; i < mapLayers['highSchool'].length; i++) {
+        map.setLayoutProperty('highSchool' + i, 'visibility', highSchoolsVisible ? 'none' : 'visible')
+      }
+      highSchoolsVisible = !highSchoolsVisible;
+    }
+
+    var addMapLayers = function (map) {
+      Object.keys(mapLayers).forEach(function (schoolType) {
+        mapLayers[schoolType].forEach(function (layer, index) {
+          var id = schoolType + index
+          map.addSource(id, {
+            'type': 'geojson',
+            'data': layer.data
+          });
+          map.addLayer({
+            'id': id,
+            'type': 'fill',
+            'source': id,
+            'layout': {},
+            'paint': {
+              'fill-color': layer.fill,
+              'fill-opacity': 0.3
+            }
+          });
+          // map.on('click', id, function (e) {
+          //   new mapboxgl.Popup()
+          //     .setHTML(layer.name)
+          //     .setLngLat([e.lngLat['lng'], e.lngLat['lat']])
+          //     .addTo(map);
+          // });
+        })
+      })
+      toggleHighSchools(map);
+    }
+
     $('.toggleHighSchools').click(function() {toggleHighSchools(map)})
+    
     map.on('load', function () {
       map.addControl(new mapboxgl.NavigationControl());
 
+      console.log('in map.on(load)')
       addMapLayers(map)
       sensorData.data.features.forEach(function (marker) {
         // create a HTML element for each feature
@@ -203,16 +217,8 @@
     });
   }
 
-  mapboxgl.accessToken = 'pk.eyJ1IjoiZHFnb3JlbGljayIsImEiOiJja2k0c242OHAxd291MzBwZWMwbDB1cjA3In0.W5Cq9wArOm8vGVSEgE7ajQ';
-  var map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v11',
-    center: [-76.549982, 38.297894],
-    zoom: 9,
-    minZoom: 8,
-  });
-
   var updateLatest = function () {
+    console.log('getting latest...')
     $.getJSON('https://nqyzh7zcib.execute-api.us-east-1.amazonaws.com/prod/latest', function (data) {
       var AQI = calculateAverageAQI(data.smchdSensors.data)
       if (customAQI) {
@@ -259,6 +265,7 @@
         var trailerIndex = SensorLocations.data.features.findIndex(function (x) { return x.properties.id === 33})
         mapData.data.features[trailerIndex].data.push({'AQI': data.trailer.AQI, 'Label': 'Trailer weather station'})
       }
+      console.log('loading map called')
       loadMap(mapData)
 
     })
