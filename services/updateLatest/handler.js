@@ -10,7 +10,6 @@ const SENSOR_DATA_BUCKET = process.env.SENSOR_DATA_BUCKET;
 
 const s3 = new AWS.S3();
 
-
 const getTrailerLatest = () => {
   return new Promise((resolve, reject) => {
     try {
@@ -22,8 +21,8 @@ const getTrailerLatest = () => {
           console.log(err)
           throw new Error(err)
         }
-        // const TTL = 24 * 60 * 60 * 1000 // 24 hours
-        // const toDelete = [];
+        const TTL = 7 * 24 * 60 * 60 * 1000 // 1 week
+        const toDelete = [];
         const isoPattern = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/
         const now = moment(new Date())
         let leastDistance = Infinity;
@@ -40,7 +39,6 @@ const getTrailerLatest = () => {
                 leastDistance = difference
                 latestFile = data.Contents[i].Key
               }
-              // TODO add TTL
               // if (difference > TTL) {
               //   toDelete.push(key)
               // }
@@ -50,6 +48,21 @@ const getTrailerLatest = () => {
             throw new Error(err)
           }
         }
+        // delete objects older than 1 week
+        // const objectsToDelete = toDelete.map(key => {return {Key: key}});
+        // var deleteParam = {
+        //     Bucket: 'bucket-name',
+        //     Delete: {
+        //         Objects: objectsToDelete
+        //     }
+        // };    
+        // s3.deleteObjects(deleteParam, function(err, data) {
+        //     if (err) {
+        //       console.log(err, err.stack);
+        //     } else {
+        //       console.log('delete', data);
+        //     } 
+        // });
         // get file contents of latest
         s3.getObject({
           Bucket: SENSOR_DATA_BUCKET,
@@ -195,6 +208,13 @@ module.exports.updateLatest = async (event, context, callback) => {
     console.log(err)
   }
 
+  const smchdSensorIDs = [91277,92271,92885]
+  try {
+    smchdSensorData = await getLatestPurpleAirData(smchdSensorIDs)
+  } catch (err) {
+    console.log(err)
+  }
+
   // fetch weather data 
   let weatherData = []
   // fetch community sensor data
@@ -215,6 +235,7 @@ module.exports.updateLatest = async (event, context, callback) => {
   const latestData = {
     timestamp: Date.now(),
     communitySensors: communitySensorData,
+    smchdSensors: smchdSensorData,
     weather: weatherData,
     trailer: trailerData
   }

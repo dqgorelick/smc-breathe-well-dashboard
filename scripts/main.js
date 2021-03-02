@@ -6,6 +6,9 @@
 
   var purpleAirIdToLocalId = {
     // 2221: 1 // note: stubbed data
+    92271: 10, // LDES Front Sensor
+    91277: 10, // LDES Side Sensor
+    92885: 10, // LDES Back Sensor
   }
 
   var categories = {
@@ -131,7 +134,6 @@
   var addMapLayers = function (map) {
     Object.keys(mapLayers).forEach(function (schoolType) {
       mapLayers[schoolType].forEach(function (layer, index) {
-        console.log(layer, schoolType)
         var id = schoolType + index
         map.addSource(id, {
           'type': 'geojson',
@@ -158,9 +160,24 @@
     toggleHighSchools(map);
   }
 
+  var getMarkerAqiAverage = function (data) {
+    var sum = 0;
+    data.forEach(function(d) {
+      sum += d.AQI
+    })
+    return sum/data.length
+  }
+
+  var displayMarkerData = function (data) {
+    var finalString = ''
+    data.forEach(function(d) {
+      finalString += '<p>' + d.Label + ' AQI: ' + d.AQI + '</p>'
+    })
+    return finalString
+  }
+
   var loadMap = function (sensorData) {
     $('.toggleHighSchools').click(function() {toggleHighSchools(map)})
-    console.log(sensorData)
     map.on('load', function () {
       map.addControl(new mapboxgl.NavigationControl());
 
@@ -170,15 +187,13 @@
         var el = document.createElement('div');
         el.className = 'marker';
 
-        if (marker.data) {
-          console.log(marker.data)
-          var category = AqiToCategory(marker.data.AQI)
-          console.log('categoriy', category)
+        if (marker.data.length) {
+          var category = AqiToCategory(getMarkerAqiAverage(marker.data))
           el.className = 'marker aqi-' + category.color
         }
           // create the popup
         var markerPopup = new mapboxgl.Popup({offset: 25}).setHTML('<div><p>' + marker.properties.description + '</p><p>' 
-        + (marker.data ? 'AQI: ' + JSON.stringify(marker.data.AQI) : 'Site offline') + '</p></div>');
+        + (marker.data.length ? displayMarkerData(marker.data) : 'Site offline') + '</p></div>');
         // make a marker for each feature and add to the map
         new mapboxgl.Marker(el)
           .setLngLat(marker.geometry.coordinates)
@@ -198,9 +213,8 @@
   });
 
   var updateLatest = function () {
-    $.getJSON('https://utbo5or9sk.execute-api.us-east-1.amazonaws.com/dev/latest', function (data) {
-      console.log(data)
-      var AQI = calculateAverageAQI(data.communitySensors.data)
+    $.getJSON('https://nqyzh7zcib.execute-api.us-east-1.amazonaws.com/prod/latest', function (data) {
+      var AQI = calculateAverageAQI(data.smchdSensors.data)
       if (customAQI) {
         AQI = parseInt(customAQI)
       }
@@ -233,28 +247,22 @@
       $('.trailer-updated').text('Updated ' + trailerUpdated.fromNow() + ' (updated hourly)')
 
       var mapData = SensorLocations
-      data.communitySensors.data.forEach(function (sensorData) {
+      data.smchdSensors.data.forEach(function (sensorData) {
         if (purpleAirIdToLocalId[sensorData['ID']] !== undefined) {
           var matchedIndex = SensorLocations.data.features.findIndex(function (x) { return x.properties.id === purpleAirIdToLocalId[sensorData['ID']] })
           if (matchedIndex !== -1) {
-            mapData.data.features[matchedIndex].data = sensorData
+            mapData.data.features[matchedIndex].data.push(sensorData)
           }
         }
       })
       if(data.trailer.AQI) {
         var trailerIndex = SensorLocations.data.features.findIndex(function (x) { return x.properties.id === 33})
-        mapData.data.features[trailerIndex].data = data.trailer
+        mapData.data.features[trailerIndex].data.push({'AQI': data.trailer.AQI, 'Label': 'Trailer weather station'})
       }
       loadMap(mapData)
 
     })
-
-
-
-    // map.getSource('places').setData(data);
   }
-
-
 
   updateLatest()
 })()

@@ -114,6 +114,7 @@
       width: 54px;
       height: 60px;
       cursor: pointer;
+      opacity: 0.7;
     }
 
     .mapboxgl-marker {
@@ -124,18 +125,23 @@
 
     .marker.aqi-green {
       background-image: url('./assets/flag0.png');
+      opacity: 1;
     }
     .marker.aqi-yellow {
       background-image: url('./assets/flag1.png');
+      opacity: 1;
     }
     .marker.aqi-orange {
       background-image: url('./assets/flag2.png');
+      opacity: 1;
     }
     .marker.aqi-red {
       background-image: url('./assets/flag3.png');
+      opacity: 1;
     }
     .marker.aqi-purple {
       background-image: url('./assets/flag4.png');
+      opacity: 1;
     }
 
     .mapboxgl-popup {
@@ -159,7 +165,7 @@
 
 <body>
   <div class='wrapper'>
-    <div class='module-wrapper'>
+    <div class='module-wrapper half'>
       <div>
         <h2>Air Quality Index (AQI)</h2>
         <div class='flag-wrapper'>
@@ -168,12 +174,11 @@
           <h3><span class="aqi-description"></span></h3>
           <p><span class="aqi-description-extended"></span></p>
           <p><a target="_blank" href="./assets/air_quality_poster.png">Learn more about the flags.</a></p>
-          <p><i>Note – this AQI is calculated from a 24 hour average of live community Purple Air sensor data.</i></p>
           <p><span class="updated"></span></p>
         </div>
       </div>
     </div>
-    <div class='module-wrapper half'>
+   <!--  <div class='module-wrapper half'>
       <div>
         <h2>Local Weather – local sensor</h2>
         <p>Hourly weather sensor readings from St Mary's sensor located at the <a target="_blank" href="https://goo.gl/maps/xWS1S7CvFSbwFSyJ9">SMC Heath Department</a>.</p>
@@ -189,7 +194,7 @@
         </p>
         <p><span class="trailer-updated"></span></p>
       </div>
-    </div>
+    </div> -->
     <div class='module-wrapper half'>
       <div>
         <h2>Local Weather – weather model</h2>
@@ -245,7 +250,7 @@
       <div>
         <h2>Data access & additional information</h2>
         <p>The data from the sensor array is available in the JSON data format here: <a target="_blank"
-            href="https://utbo5or9sk.execute-api.us-east-1.amazonaws.com/dev/latest">access raw air quality
+            href="https://nqyzh7zcib.execute-api.us-east-1.amazonaws.com/prod/latest">access raw air quality
             data</a>.</p>
         <p>Learn more about how the AQI values are calculated: <a target="_blank"
             href="https://www.airnow.gov/sites/default/files/2020-05/aqi-technical-assistance-document-sept2018.pdf">EPA
