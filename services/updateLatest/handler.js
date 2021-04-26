@@ -208,7 +208,83 @@ module.exports.updateLatest = async (event, context, callback) => {
     console.log(err)
   }
 
-  const smchdSensorIDs = [91277,92271,92885]
+  const smchdSensorIDs = [
+    92271, // ID=10, LDES Front Sensor
+    91277, // ID=10, LDES Side Sensor
+    92885, // ID=10, LDES Back Sensor
+    92793, // ID=16, RES Left Side Sensor
+    91809, // ID=16, RES Front Sensor
+    90635, // ID=16, RES Right Side Sensor
+    90599, // ID=17, PPES Back Sensor
+    90655, // ID=17, PPES Right Sensor
+    92291, // ID=17, PPES Front Sensor
+    91347, // ID=20, SRMS Right Side Sensor
+    92789, // ID=20, SRMS Front Sensor
+    92821, // ID=20, SRMS Back Sensor
+    92881, // ID=14, PHES Back Right Sensor
+    91393, // ID=14, PHES Front Left Sensor
+    92859, // ID=14, PHES Front Right Sensor
+    93019, // ID=5,  CES Back Sensor
+    90589, // ID=5,  CES Right Side Sensor
+    85659, // ID=5,  CES Front Sensor
+    90817, // ID=25, GMHS Front Sensor
+    92289, // ID=27, FLA Front Sensor
+    93001, // ID=27, FLA Back Left Sensor
+    92285, // ID=27, FLA Back Right Sensor
+    92281, // ID=11, LPES Back Sensor
+    90881, // ID=11, LPES Left Side Sensor
+    92245, // ID=11, LPES Front Sensor 
+    90647, // ID=7,  GKES Right Sensor
+    92559, // ID=7,  GKES Front Sensor
+    92325, // ID=7,  GKES Left Sensor
+    92969, // ID=21, EMS Front Right Sensor
+    83993, // ID=21, EMS Back Left Sensor
+    92689, // ID=21, EMS Front Left Sensor
+    90687, // ID=6,  GHES Back Sensor
+    92701, // ID=6,  GHES Front Right Sensor
+    85473, // ID=6,  GHES Front Left Sensor
+    92803, // ID=17, TCES Back Left Sensor
+    91811, // ID=17, TCES Front Sensor
+    91819, // ID=17, TCES Front Right Sensor
+    92437, // ID=4,  EES Front Left Sensor
+    92427, // ID=4,  EES Front Right Sensor
+    92833, // ID=8,  HES Front Right Sensor
+    90849, // ID=8,  HES Back Sensor
+    85455, // ID=8,  HES Front Left Sensor
+    92769, // ID=26, LHS Right Side Sensor
+    92695, // ID=26, LHS Front Sensor
+    92683, // ID=26, LHS Left Side Sensor
+    92855, // ID=22, LMS Back Sensor 
+    92415, // ID=22, LMS Front Sensor 
+    93017, // ID=22, LMS Right Side Sensor 
+    90645, // ID=9,  LES Front Left Sensor 
+    92745, // ID=9,  LES Front Right Sensor 
+    83855, // ID=9,  LES Back Sensor 
+    93027, // ID=2,  CWFD Front Left Sensor 
+    90659, // ID=2,  CWFD Front Right Sensor 
+    93015, // ID=1,  BES Front Sensor 
+    93025, // ID=1,  BES Right Side Sensor 
+    93013, // ID=1,  BES Back Sensor 
+    92421, // ID=3,  DES Back Sensor 
+    92425, // ID=3,  DES Right Side Sensor 
+    93021, // ID=3,  DES Front Sensor 
+    90629, // ID=24, CHS Back Sensor 
+    91329, // ID=24, CHS Front Sensor 
+    90641, // ID=24, CHS Left Side Sensor 
+    92883, // ID=19, MBMS Back Sensor 
+    92827, // ID=19, MBMS Front Sensor 
+    89235, // ID=13, OES Front Right Sensor 
+    92279, // ID=13, OES Back Sensor 
+    92795, // ID=13, OES Front Left Sensor 
+    92679, // ID=12, MES Back Sensor 
+    92999, // ID=12, MES Left Side Sensor 
+    92687, // ID=12, MES Front Sensor 
+    92747, // ID=18, WMES Back Sensor 
+    92785, // ID=18, WMES Left Side 
+    91383, // ID=18, WMES Front Sensor
+    92807 // ID=35, Jamie L. Roberts Stadium
+  ]
+
   try {
     smchdSensorData = await getLatestPurpleAirData(smchdSensorIDs)
   } catch (err) {

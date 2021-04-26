@@ -200,6 +200,12 @@ var SensorLocations = {
           id: 33, description: "Health Department (Leonardtown)", purpleAirPlanned: false, purpleAirInstalled: false, AeroqualSensor: true, EPA: 'SOMETIMES'
         }, geometry: { type: 'Point', coordinates: [-76.6372424, 38.2993353] },
         data: [],
+      },      
+      {
+        type: 'Feature', properties: {
+          id: 35, description: "Jamie L. Roberts Stadium", purpleAirPlanned: false, purpleAirInstalled: false, AeroqualSensor: true, EPA: 'SOMETIMES'
+        }, geometry: { type: 'Point', coordinates: [-76.419364, 38.186476] },
+        data: [],
       },
     ]
   }
