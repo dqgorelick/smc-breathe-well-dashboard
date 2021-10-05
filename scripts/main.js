@@ -364,7 +364,7 @@
         mapData.data.features[trailerIndex].data.push({'AQI': data.trailer.AQI, 'Label': 'Trailer weather station'})
       }
       console.log('loading map called')
-      loadMap(mapData)
+      // loadMap(mapData)
 
     })
   }
